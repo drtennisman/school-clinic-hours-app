@@ -74,40 +74,6 @@
       padding: 20px 16px;
     }
 
-    /* Setup banner */
-    .setup-banner {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .setup-banner strong { color: #856404; }
-
-    .setup-banner input {
-      width: 100%;
-      margin-top: 8px;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    .setup-banner button {
-      margin-top: 8px;
-      background: #052d54;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
     /* Form card */
     .card {
       background: white;
@@ -317,13 +283,6 @@
 
   <div class="container">
 
-    <!-- Setup: Apps Script URL -->
-    <div class="setup-banner" id="setupBanner" style="display:none;">
-      <strong>First-time setup:</strong> Paste your Google Apps Script Web App URL below.
-      <input type="url" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
-      <button onclick="saveScriptUrl()">Save URL</button>
-    </div>
-
     <!-- Main form -->
     <div class="card">
       <div class="field">
@@ -397,16 +356,12 @@
 
     const CLINICS = ['Westminister'];
 
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1a52l21IIREqP8IqoJ-aBMCxnqzKfNoXdcUuUk7p1s1YvmbhEqV63Ne8DJ_pL51AG6w/exec';
+
     // ── Init ────────────────────────────────────
-    const scriptUrlKey = 'clinicHoursScriptUrl';
     const recentKey = 'clinicHoursRecent';
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Check for saved script URL
-      if (!localStorage.getItem(scriptUrlKey)) {
-        document.getElementById('setupBanner').style.display = 'block';
-      }
-
       // Set date to today
       const today = new Date();
       const yyyy = today.getFullYear();
@@ -423,17 +378,6 @@
       renderRecent();
     });
 
-    // ── Setup ───────────────────────────────────
-    function saveScriptUrl() {
-      const url = document.getElementById('scriptUrlInput').value.trim();
-      if (!url.startsWith('https://script.google.com/')) {
-        alert('Please enter a valid Google Apps Script URL');
-        return;
-      }
-      localStorage.setItem(scriptUrlKey, url);
-      document.getElementById('setupBanner').style.display = 'none';
-    }
-
     // ── Hours helpers ───────────────────────────
     function pickHours(btn, val) {
       document.getElementById('hoursInput').value = val;
@@ -443,13 +387,6 @@
 
     // ── Submit ──────────────────────────────────
     async function submitHours() {
-      const scriptUrl = localStorage.getItem(scriptUrlKey);
-      if (!scriptUrl) {
-        document.getElementById('setupBanner').style.display = 'block';
-        showStatus('Please set up the Apps Script URL first.', 'error');
-        return;
-      }
-
       const staff = document.getElementById('staffSelect').value;
       const date = document.getElementById('dateInput').value;
       const clinic = document.getElementById('clinicSelect').value;
@@ -480,7 +417,7 @@
           total: hours * rate
         };
 
-        const response = await fetch(scriptUrl, {
+        const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
