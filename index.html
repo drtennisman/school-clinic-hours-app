@@ -347,15 +347,15 @@
       <div class="field">
         <label>Hours</label>
         <div class="hours-row">
-          <button class="hours-btn" onclick="adjustHours(-0.5)">−</button>
-          <input type="number" id="hoursInput" min="0.5" max="12" step="0.5" value="1.5" inputmode="decimal">
-          <button class="hours-btn" onclick="adjustHours(0.5)">+</button>
+          <button class="hours-btn" onclick="adjustHours(-0.25)">−</button>
+          <input type="number" id="hoursInput" min="0.25" max="12" step="0.25" value="1.5" inputmode="decimal">
+          <button class="hours-btn" onclick="adjustHours(0.25)">+</button>
         </div>
         <div class="quick-hours">
-          <button onclick="setHours(1)">1 hr</button>
-          <button onclick="setHours(1.5)">1.5 hr</button>
-          <button onclick="setHours(2)">2 hr</button>
-          <button onclick="setHours(3)">3 hr</button>
+          <button onclick="setHours(0.75)">0:45</button>
+          <button onclick="setHours(1)">1:00</button>
+          <button onclick="setHours(1.5)">1:30</button>
+          <button onclick="setHours(2)">2:00</button>
         </div>
       </div>
     </div>
@@ -429,7 +429,7 @@
     function adjustHours(delta) {
       const input = document.getElementById('hoursInput');
       let val = parseFloat(input.value) || 0;
-      val = Math.max(0.5, Math.min(12, val + delta));
+      val = Math.max(0.25, Math.min(12, val + delta));
       input.value = val;
     }
 
