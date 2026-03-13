@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IJTA Clinic Hours</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a5632">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a5632, #2d8a4e);
+      color: white;
+      padding: 20px 16px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* Setup banner */
+    .setup-banner {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .setup-banner strong { color: #856404; }
+
+    .setup-banner input {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .setup-banner button {
+      margin-top: 8px;
+      background: #1a5632;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Form card */
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #fafafa;
+      color: #1a1a1a;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.2s;
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .field select:focus,
+    .field input:focus {
+      outline: none;
+      border-color: #1a5632;
+      background: white;
+    }
+
+    /* Hours input with quick buttons */
+    .hours-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .hours-row input {
+      flex: 1;
+      text-align: center;
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    .hours-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid #e0e0e0;
+      background: #fafafa;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a5632;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .hours-btn:active {
+      background: #1a5632;
+      color: white;
+      border-color: #1a5632;
+    }
+
+    .quick-hours {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .quick-hours button {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f5f5f5;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-hours button:active {
+      background: #e8f5e9;
+      border-color: #1a5632;
+      color: #1a5632;
+    }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #1a5632, #2d8a4e);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(26, 86, 50, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Status messages */
+    .status {
+      text-align: center;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .status.success {
+      display: block;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      display: block;
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.loading {
+      display: block;
+      background: #e8f5e9;
+      color: #1a5632;
+      border: 1px solid #c8e6c9;
+    }
+
+    /* Recent entries */
+    .recent-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .recent-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      font-size: 14px;
+    }
+
+    .recent-entry .info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .recent-entry .name {
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .recent-entry .detail {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .recent-entry .hours {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a5632;
+    }
+
+    .no-entries {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>IJTA Clinic Hours</h1>
+    <p>Log your teaching hours</p>
+  </div>
+
+  <div class="container">
+
+    <!-- Setup: Apps Script URL -->
+    <div class="setup-banner" id="setupBanner" style="display:none;">
+      <strong>First-time setup:</strong> Paste your Google Apps Script Web App URL below.
+      <input type="url" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
+      <button onclick="saveScriptUrl()">Save URL</button>
+    </div>
+
+    <!-- Main form -->
+    <div class="card">
+      <div class="field">
+        <label>Staff Member</label>
+        <select id="staffSelect">
+          <option value="">Select your name...</option>
+          <option value="J.C.">J.C.</option>
+          <option value="Joey">Joey</option>
+          <option value="Gus">Gus</option>
+          <option value="Matt">Matt</option>
+          <option value="Lisa">Lisa</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="dateInput">
+      </div>
+
+      <div class="field">
+        <label>Clinic</label>
+        <select id="clinicSelect">
+          <option value="Westminster">Westminster</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Hours</label>
+        <div class="hours-row">
+          <button class="hours-btn" onclick="adjustHours(-0.5)">−</button>
+          <input type="number" id="hoursInput" min="0.5" max="12" step="0.5" value="1.5" inputmode="decimal">
+          <button class="hours-btn" onclick="adjustHours(0.5)">+</button>
+        </div>
+        <div class="quick-hours">
+          <button onclick="setHours(1)">1 hr</button>
+          <button onclick="setHours(1.5)">1.5 hr</button>
+          <button onclick="setHours(2)">2 hr</button>
+          <button onclick="setHours(3)">3 hr</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitHours()">
+      Log Hours
+    </button>
+
+    <div class="status" id="statusMsg"></div>
+
+    <!-- Recent entries (local) -->
+    <div style="margin-top: 28px;">
+      <div class="recent-header">Recent Entries</div>
+      <div id="recentEntries">
+        <div class="no-entries">No entries yet</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Configuration ───────────────────────────
+    const STAFF = [
+      { name: 'J.C.',  rate: 80 },
+      { name: 'Joey',  rate: 79 },
+      { name: 'Gus',   rate: 65 },
+      { name: 'Matt',  rate: 65 },
+      { name: 'Lisa',  rate: 75 },
+    ];
+
+    const CLINICS = ['Westminster'];
+
+    // ── Init ────────────────────────────────────
+    const scriptUrlKey = 'clinicHoursScriptUrl';
+    const recentKey = 'clinicHoursRecent';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check for saved script URL
+      if (!localStorage.getItem(scriptUrlKey)) {
+        document.getElementById('setupBanner').style.display = 'block';
+      }
+
+      // Set date to today
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+
+      // Remember last staff pick
+      const lastStaff = localStorage.getItem('clinicHoursLastStaff');
+      if (lastStaff) {
+        document.getElementById('staffSelect').value = lastStaff;
+      }
+
+      renderRecent();
+    });
+
+    // ── Setup ───────────────────────────────────
+    function saveScriptUrl() {
+      const url = document.getElementById('scriptUrlInput').value.trim();
+      if (!url.startsWith('https://script.google.com/')) {
+        alert('Please enter a valid Google Apps Script URL');
+        return;
+      }
+      localStorage.setItem(scriptUrlKey, url);
+      document.getElementById('setupBanner').style.display = 'none';
+    }
+
+    // ── Hours helpers ───────────────────────────
+    function adjustHours(delta) {
+      const input = document.getElementById('hoursInput');
+      let val = parseFloat(input.value) || 0;
+      val = Math.max(0.5, Math.min(12, val + delta));
+      input.value = val;
+    }
+
+    function setHours(val) {
+      document.getElementById('hoursInput').value = val;
+    }
+
+    // ── Submit ──────────────────────────────────
+    async function submitHours() {
+      const scriptUrl = localStorage.getItem(scriptUrlKey);
+      if (!scriptUrl) {
+        document.getElementById('setupBanner').style.display = 'block';
+        showStatus('Please set up the Apps Script URL first.', 'error');
+        return;
+      }
+
+      const staff = document.getElementById('staffSelect').value;
+      const date = document.getElementById('dateInput').value;
+      const clinic = document.getElementById('clinicSelect').value;
+      const hours = parseFloat(document.getElementById('hoursInput').value);
+
+      // Validate
+      if (!staff) { showStatus('Please select your name.', 'error'); return; }
+      if (!date) { showStatus('Please select a date.', 'error'); return; }
+      if (!hours || hours <= 0) { showStatus('Please enter hours.', 'error'); return; }
+
+      // Find rate
+      const staffInfo = STAFF.find(s => s.name === staff);
+      const rate = staffInfo ? staffInfo.rate : 0;
+
+      // Disable button
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+      showStatus('Submitting...', 'loading');
+
+      try {
+        const payload = {
+          date: date,
+          staff: staff,
+          clinic: clinic,
+          hours: hours,
+          rate: rate,
+          total: hours * rate
+        };
+
+        const response = await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        // no-cors means we can't read the response, so assume success
+        showStatus('Hours logged successfully!', 'success');
+
+        // Save staff pick
+        localStorage.setItem('clinicHoursLastStaff', staff);
+
+        // Add to recent
+        addRecent(payload);
+
+        // Reset hours to default
+        document.getElementById('hoursInput').value = 1.5;
+
+      } catch (err) {
+        showStatus('Error submitting. Please try again.', 'error');
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Log Hours';
+      }
+    }
+
+    // ── Status message ──────────────────────────
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.className = 'status ' + type;
+
+      if (type === 'success') {
+        setTimeout(() => { el.style.display = 'none'; }, 3000);
+      }
+    }
+
+    // ── Recent entries (localStorage) ───────────
+    function addRecent(entry) {
+      let recent = JSON.parse(localStorage.getItem(recentKey) || '[]');
+      recent.unshift({
+        ...entry,
+        submittedAt: new Date().toISOString()
+      });
+      // Keep last 20
+      recent = recent.slice(0, 20);
+      localStorage.setItem(recentKey, JSON.stringify(recent));
+      renderRecent();
+    }
+
+    function renderRecent() {
+      const container = document.getElementById('recentEntries');
+      const recent = JSON.parse(localStorage.getItem(recentKey) || '[]');
+
+      if (recent.length === 0) {
+        container.innerHTML = '<div class="no-entries">No entries yet</div>';
+        return;
+      }
+
+      container.innerHTML = recent.map(entry => {
+        const d = new Date(entry.date + 'T12:00:00');
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return `
+          <div class="recent-entry">
+            <div class="info">
+              <span class="name">${entry.staff}</span>
+              <span class="detail">${dateStr} &middot; ${entry.clinic}</span>
+            </div>
+            <span class="hours">${entry.hours}h</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ── Service Worker registration ─────────────
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+
+</body>
+</html>
