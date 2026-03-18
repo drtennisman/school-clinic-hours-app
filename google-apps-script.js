@@ -206,12 +206,14 @@ function generateReport(monthOverride, yearOverride) {
   report.getRange(currentRow, 1).setFontSize(12);
   currentRow++;
 
-  var detailHeaders = ['Date', 'Staff', 'Clinic', 'Hours', 'Rate', 'Total'];
+  var detailHeaders = ['Day', 'Date', 'Staff', 'Clinic', 'Hours', 'Rate', 'Total'];
   report.getRange(currentRow, 1, 1, detailHeaders.length).setValues([detailHeaders]);
   report.getRange(currentRow, 1, 1, detailHeaders.length).setFontWeight('bold');
   report.getRange(currentRow, 1, 1, detailHeaders.length).setBackground('#052d54');
   report.getRange(currentRow, 1, 1, detailHeaders.length).setFontColor('#ffffff');
   currentRow++;
+
+  var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
   // Sort detail rows by date, then staff
   monthRows.sort(function(a, b) {
@@ -224,24 +226,41 @@ function generateReport(monthOverride, yearOverride) {
 
   for (var m = 0; m < monthRows.length; m++) {
     var entry = monthRows[m];
-    report.getRange(currentRow, 1).setValue(entry.date);
-    report.getRange(currentRow, 2).setValue(entry.staff);
-    report.getRange(currentRow, 3).setValue(entry.clinic);
-    report.getRange(currentRow, 4).setValue(entry.hours);
-    report.getRange(currentRow, 5).setValue(entry.rate);
-    report.getRange(currentRow, 5).setNumberFormat('$#,##0.00');
-    report.getRange(currentRow, 6).setValue(entry.total);
-    report.getRange(currentRow, 6).setNumberFormat('$#,##0.00');
 
-    if (m % 2 === 0) {
-      report.getRange(currentRow, 1, 1, 6).setBackground('#f0f4f8');
+    // Parse date for day-of-week and friendly display
+    var entryDate;
+    if (entry.date instanceof Date) {
+      entryDate = entry.date;
+    } else {
+      var dp = String(entry.date).split('-');
+      entryDate = new Date(dp[0], dp[1] - 1, dp[2]);
+    }
+    var dayOfWeek = dayNames[entryDate.getDay()];
+    var friendlyDate = Utilities.formatDate(entryDate, Session.getScriptTimeZone(), 'MMM d, yyyy');
+
+    report.getRange(currentRow, 1).setValue(dayOfWeek);
+    report.getRange(currentRow, 2).setValue(friendlyDate);
+    report.getRange(currentRow, 3).setValue(entry.staff);
+    report.getRange(currentRow, 4).setValue(entry.clinic);
+    report.getRange(currentRow, 5).setValue(entry.hours);
+    report.getRange(currentRow, 6).setValue(entry.rate);
+    report.getRange(currentRow, 6).setNumberFormat('$#,##0.00');
+    report.getRange(currentRow, 7).setValue(entry.total);
+    report.getRange(currentRow, 7).setNumberFormat('$#,##0.00');
+
+    // Highlight weekends light yellow
+    var isWeekend = (entryDate.getDay() === 0 || entryDate.getDay() === 6);
+    if (isWeekend) {
+      report.getRange(currentRow, 1, 1, 7).setBackground('#fffde7');
+    } else if (m % 2 === 0) {
+      report.getRange(currentRow, 1, 1, 7).setBackground('#f0f4f8');
     }
 
     currentRow++;
   }
 
   // Auto-resize columns
-  for (var c = 1; c <= 6; c++) {
+  for (var c = 1; c <= 7; c++) {
     report.autoResizeColumn(c);
   }
 
