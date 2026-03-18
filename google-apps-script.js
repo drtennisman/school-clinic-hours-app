@@ -271,6 +271,67 @@ function generateLastMonthReport() {
   generateReport(month, year);
 }
 
+// Convenience: generate report for two months ago
+function generateTwoMonthsAgoReport() {
+  var now = new Date();
+  var month = now.getMonth() - 1; // subtract 2 from current (0-indexed)
+  var year = now.getFullYear();
+  if (month <= 0) {
+    month = month + 12;
+    year--;
+  }
+  generateReport(month, year);
+}
+
+// Generate one report tab for every month that has data, from the
+// earliest entry up through the current month.
+function generateAllMonthsReport() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheets()[0];
+
+  var lastRow = dataSheet.getLastRow();
+  if (lastRow < 2) {
+    Logger.log('No data to report.');
+    return;
+  }
+
+  var data = dataSheet.getRange(2, 1, lastRow - 1, 7).getValues();
+
+  // Find the earliest and latest months in the data
+  var minYear = 9999, minMonth = 12;
+  var now = new Date();
+  var maxYear = now.getFullYear(), maxMonth = now.getMonth() + 1;
+
+  for (var i = 0; i < data.length; i++) {
+    var dateVal = data[i][0];
+    var rowDate;
+    if (dateVal instanceof Date) {
+      rowDate = dateVal;
+    } else {
+      var parts = String(dateVal).split('-');
+      rowDate = new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    var ry = rowDate.getFullYear();
+    var rm = rowDate.getMonth() + 1;
+    if (ry < minYear || (ry === minYear && rm < minMonth)) {
+      minYear = ry;
+      minMonth = rm;
+    }
+  }
+
+  // Walk month-by-month from earliest to current and generate each report
+  var y = minYear, m = minMonth;
+  var generated = 0;
+  while (y < maxYear || (y === maxYear && m <= maxMonth)) {
+    generateReport(m, y);
+    generated++;
+    m++;
+    if (m > 12) { m = 1; y++; }
+  }
+
+  Logger.log('Generated ' + generated + ' monthly report tab(s).');
+}
+
 
 // ============================================================
 // AUTOMATIC MONTHLY TRIGGER
